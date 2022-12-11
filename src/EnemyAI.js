@@ -18,8 +18,13 @@ let enemyRoot_3;
 
 let defaultHealth = 100;
 let fireDelay = 1000;
+
 export let shootDist = 60;
+shootDist = Math.pow(shootDist, 2);
+
 export let followDist = 120;
+followDist = Math.pow(followDist, 2);
+
 let defaultEnemySpawnCount = 15;
 
 let currScene;

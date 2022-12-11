@@ -7,14 +7,10 @@ export let bulletCount = 100;
 let width;
 let height;
 let canFire = true;
-
-let decalSize = new BABYLON.Vector3(1, 1, 1);
-let vColors;
-let paintBullet;
-let decalMats = [];
+let fireDist = 175;
+fireDist = Math.pow(fireDist, 2);
 
 let crossHair;
-let bulletSpawnPoint = [];
 let activeSpawnPoint;
 let laser;
 let trailMesh;
@@ -101,7 +97,14 @@ export const PlayerShoot = (scene, camera) => {
     let hitPoint = pickInfo.pickedPoint;
 
     if (hitMesh.name.includes("HitTarget")) {
-      GotHit(hitMesh);
+      let enemyDist = BABYLON.Vector3.DistanceSquared(
+        hitMesh.getAbsolutePosition(),
+        activeSpawnPoint.getAbsolutePosition()
+      );
+      // console.log(enemyDist);
+      if (enemyDist <= fireDist) {
+        GotHit(hitMesh);
+      }
     }
     // if (hitMesh.name.includes("chopper")) {
     //   heliHitCount++;

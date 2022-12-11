@@ -144,7 +144,7 @@ export const FollowPlayer = (PlayerPos) => {
     // if (i == playerAgentIdx) {
     //   continue;
     // }
-    let distVec = BABYLON.Vector3.Distance(
+    let distVec = BABYLON.Vector3.DistanceSquared(
       PlayerPos,
       crowd.getAgentPosition(agents[i])
     );

@@ -1,0 +1,18 @@
+{
+  "Gender": {
+    "Male": {
+      "Beard": 5,
+      "Eyeglass": 4,
+      "Hair": 10,
+      "Top": 4,
+      "Bottom": 1
+    },
+    "Female": {
+      "Beard": 0,
+      "Eyeglass": 4,
+      "Hair": 5,
+      "Top": 4,
+      "Bottom": 1
+    }
+  }
+}

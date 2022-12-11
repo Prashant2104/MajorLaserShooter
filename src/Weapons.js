@@ -27,13 +27,17 @@ export let currGun;
 export const spawnWeapon = (scene, camera, player) => {
   BABYLON.SceneLoader.ImportMesh(
     "",
-    "Gun/LaserGun3.glb",
-    "",
+    "Gun/",
+    "LaserGunNew.glb", //Gun Model Name
     scene,
-    (meshes) => {
+    (meshes, ps, skel, ag, node) => {
       laserGunRoot = meshes[0];
       laserGunRoot.name = "gun0";
-      activeSpawnPoint = scene.getTransformNodeByName("SpawnPoint");
+      node.forEach((element) => {
+        if (element.name.includes("SpawnPoint")) {
+          activeSpawnPoint = element;
+        }
+      });
       laserGunRoot.setParent(player);
       laserGunRoot.position.x = 0.1;
       laserGunRoot.position.y = -0.25;
@@ -41,9 +45,9 @@ export const spawnWeapon = (scene, camera, player) => {
       laserGunRoot.rotation = new BABYLON.Vector3(0, 0, Math.PI);
       currGun = laserGunRoot;
 
-      let gunMat = scene.getMeshByName("gun").material;
-      gunMat.metallic = 0.75;
-      gunMat.roughness = 0.75;
+      // let gunMat = scene.getMeshByName("gun").material;
+      // gunMat.metallic = 0.75;
+      // gunMat.roughness = 0.75;
     }
   );
 
@@ -68,9 +72,9 @@ export const spawnWeapon = (scene, camera, player) => {
 
   /********** Laser Prefab Setup **********/
   const laserMat = new BABYLON.StandardMaterial("LaserMat", scene);
-  laserMat.emissiveColor = BABYLON.Color3.Red();
+  laserMat.emissiveColor = BABYLON.Color3.Blue();
   laserMat.unlit = true;
-  laserMat.diffuseColor = BABYLON.Color3.Red();
+  laserMat.diffuseColor = BABYLON.Color3.Blue();
 
   laser = new BABYLON.MeshBuilder.CreateIcoSphere(
     "PlayerLaser",

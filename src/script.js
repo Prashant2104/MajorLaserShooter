@@ -117,8 +117,8 @@ keyboardEvents(scene);
 const setupScene = async () => {
   BABYLON.SceneLoader.ImportMesh(
     "",
-    "Models/SpawnPoints.glb",
-    "",
+    "Models/",
+    "SpawnPoints.glb", //Enemy Spawn Points
     scene,
     (loadedMeshes) => {
       enemySpawnPoint = loadedMeshes[0].getChildTransformNodes()[0];
@@ -129,8 +129,8 @@ const setupScene = async () => {
   );
   BABYLON.SceneLoader.ImportMesh(
     "",
-    "Models/ColliderMesh.glb",
-    "",
+    "Models/",
+    "ColliderMesh.glb",
     scene,
     (loadedMeshes) => {
       loadedMeshes[0].name = "ColliderMesh";
@@ -141,8 +141,8 @@ const setupScene = async () => {
 
   BABYLON.SceneLoader.ImportMesh(
     "",
-    "Models/LaserWorld4.glb",
-    "",
+    "Models/",
+    "LaserWorld4.glb", //Main Environment Model
     scene,
     (loadedMeshes, ps, skel, animGrps) => {
       let rootMesh = loadedMeshes[0];

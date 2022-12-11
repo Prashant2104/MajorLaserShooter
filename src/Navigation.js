@@ -1,7 +1,5 @@
 import * as BABYLON from "babylonjs";
-// import reticleImg from "../../assets/Reticle.png";
-import { HeliConstAudio } from "./Audio";
-import { importedanimationGroups, localPlayer } from "./Player";
+import { localPlayer } from "./Player";
 
 export const enableNavigation = (rootMesh, scene) => {
   for (let index = 0; index < rootMesh._children.length; index++) {
@@ -117,9 +115,6 @@ export const pointerEvents = (scene, camera, anim) => {
 };
 
 function moveToTarget(objectToMove, pointToMoveTo) {
-  let runningAnim = importedanimationGroups.find(
-    (anim) => anim.name === "WALKING_ANIM"
-  );
   var moveVector = pointToMoveTo.subtract(objectToMove.position);
   if (moveVector.length() > 0.1) {
     moveVector = moveVector.normalize();

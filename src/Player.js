@@ -18,31 +18,19 @@ export let playerScore = 0;
 
 export const spawnLocalPlayer = async (userid, camera, scene) => {
   Camera = camera;
-  let gender = "Male_Crew_Spicejet.glb";
+  let gender = "Male_Final.glb";
 
   await BABYLON.SceneLoader.ImportMeshAsync("", gender, "", scene, null).then(
     (loadedMesh) => {
-      // playerSkeleton = loadedMesh.skeletons[0];
       localPlayer = loadedMesh.meshes[0];
-      importedanimationGroups = loadedMesh.animationGroups;
-      localPlayer.animations.push(...importedanimationGroups);
-      const idleAnim = localPlayer.animations.find(
-        (anim) => anim.name === "BREATHING_ANIM"
-      );
-      idleAnim.play(true);
-      runningAnim = localPlayer.animations.find(
-        (anim) => anim.name === "MALE_WALK_ANIM"
-      );
 
       for (let i = 1; i < loadedMesh.meshes.length; i++) {
         loadedMesh.meshes[i].visibility = 0;
         loadedMesh.meshes[i].isPickable = false;
       }
 
-      localPlayer.name = "me";
-
-      addNamePlate("Me", localPlayer, scene, true);
-
+      localPlayer.name = "Pacific";
+      LocalPlayerUI();
       localPlayer.rotation = new BABYLON.Vector3.Zero();
 
       colliderMesh = BABYLON.MeshBuilder.CreateBox(
@@ -55,7 +43,7 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
       colliderMesh.name = "PlayerColliderMesh";
       colliderMesh.isPickable = false;
       colliderMesh.addChild(localPlayer);
-      colliderMesh.position = new BABYLON.Vector3(-500, 15, -400);
+      colliderMesh.position = new BABYLON.Vector3(-500, 5, -400);
       colliderMesh.scaling = new BABYLON.Vector3(2.5, 2.5, 2.5);
       colliderMesh.rotation = new BABYLON.Vector3(0, 0, 0);
       colliderMesh.metadata = { videoAdded: false };
@@ -95,107 +83,6 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
   );
 };
 
-export const retargetAnims = (localPlayer, animations) => {
-  const newAnimations = [];
-  animations.forEach((animGroup) => {
-    const newAnim = animGroup.clone(animGroup.name, (target) => {
-      return localPlayer.getChildren(
-        (node) => node.name === target.name,
-        false
-      )[0];
-    });
-    newAnimations.push(newAnim);
-  });
-  return newAnimations;
-};
-
-export const addNamePlate = (name, parent, scene, isLocalUser) => {
-  var groundWidth = 1;
-  var groundHeight = 1;
-
-  var namePlate = BABYLON.MeshBuilder.CreatePlane(
-    "namePlate",
-    {
-      width: groundWidth,
-      height: groundHeight,
-      sideOrientation: BABYLON.Mesh.DOUBLESIDE,
-    },
-    scene
-  );
-  namePlate.isPickable = false;
-
-  //Adding VideoCircle
-  const videoDisc = BABYLON.MeshBuilder.CreateDisc(
-    "videoPlane",
-    { radius: 1 },
-    scene
-  );
-
-  const videoDiscMat = new BABYLON.StandardMaterial("video", scene);
-  videoDisc.material = videoDiscMat;
-
-  videoDiscMat.diffuseColor = BABYLON.Color3.Black();
-
-  const children = parent.getChildTransformNodes();
-  children.forEach((headRef) => {
-    if (headRef.name === "mixamorig:HeadTop_End") {
-      namePlate.setParent(headRef);
-      videoDisc.setParent(headRef);
-    }
-  });
-
-  videoDisc.position = new BABYLON.Vector3(0, -0.65, 0);
-  videoDisc.rotation = BABYLON.Vector3.Zero();
-  videoDisc.scaling = new BABYLON.Vector3(0.3, -0.3, 0.3);
-  videoDisc.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  videoDisc.setEnabled(false);
-
-  namePlate.position = new BABYLON.Vector3(0, -0.2, 0);
-  namePlate.rotation = new BABYLON.Vector3(0, Math.PI, Math.PI);
-  namePlate.scaling = new BABYLON.Vector3(0.6, 0.25, 0.2);
-
-  //Create dynamic texture
-  var advanceTexture = GUI.AdvancedDynamicTexture.CreateForMesh(
-    namePlate,
-    400,
-    150,
-    false,
-    null,
-    true
-  );
-
-  var panel = new GUI.Rectangle("name");
-  panel.background = "#FFFFFF";
-  panel.color = "#FFFFFF";
-  panel.cornerRadius = 10;
-  panel.height = "60%";
-  panel.width = "78%";
-  panel.clipChildren = false;
-  panel.thickness = 4;
-  panel.verticalAlignment = 1;
-  panel.horizontalAlignment = 2;
-
-  advanceTexture.addControl(panel);
-  var textBlock = new GUI.TextBlock("name", name);
-  textBlock.resizeToFit = true;
-  textBlock.fontSize = "45px";
-  textBlock.color = "#2B528A";
-  textBlock.textWrapping = 2;
-  textBlock.width = "90%";
-  panel.addControl(textBlock);
-
-  if (isLocalUser) {
-    //panel.horizontalAlignment = 2;
-    LocalPlayerUI();
-    namePlate.dispose();
-  } else {
-    HealthBar(advanceTexture);
-  }
-
-  namePlate.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  return namePlate;
-};
-
 const HealthBar = (advTex) => {
   const healthBarBG = new GUI.Rectangle("HealthBarBG");
   healthBarBG.background = "White";
@@ -210,12 +97,6 @@ const HealthBar = (advTex) => {
   healthBar.horizontalAlignment = 0;
   healthBar.background = "Green";
   healthBar.cornerRadius = 20;
-
-  // const healthBarRed = new GUI.Rectangle("HealthBarRed");
-  // healthBarBG.addControl(healthBarRed);
-  // healthBarRed.horizontalAlignment = 0;
-  // healthBarRed.background = "Red";
-  // healthBarRed.cornerRadius = 20;
 };
 export let LocalAdvTex;
 const LocalPlayerUI = () => {
@@ -258,48 +139,6 @@ const LocalPlayerUI = () => {
   scoreText.paddingTop = "1px";
   scoreText.text = playerScore.toString();
   scoreText.color = "white";
-};
-
-export const setCharacter = (rootMesh, avatarConfig) => {
-  const meshes = rootMesh._children[0].getChildren();
-  meshes.forEach((ch_mesh) => {
-    switch (ch_mesh.name.split("_")[0]) {
-      case "Hair":
-        ch_mesh.setEnabled(false);
-        if (ch_mesh.name.split("_")[1] == avatarConfig.Hair) {
-          ch_mesh.setEnabled(true);
-        }
-        break;
-      case "Top":
-        ch_mesh.setEnabled(false);
-        if (ch_mesh.name.split("_")[1] == avatarConfig.Top) {
-          ch_mesh.setEnabled(true);
-        }
-        break;
-      case "Bottom":
-        ch_mesh.setEnabled(false);
-        if (ch_mesh.name.split("_")[1] == avatarConfig.Bottom) {
-          ch_mesh.setEnabled(true);
-        }
-        break;
-      case "Eyeglass":
-        ch_mesh.setEnabled(false);
-        if (ch_mesh.name.split("_")[1] == avatarConfig.Eyeglass) {
-          ch_mesh.setEnabled(true);
-        }
-        break;
-      case "Beard":
-        ch_mesh.setEnabled(false);
-        if (ch_mesh.name.split("_")[1] == avatarConfig.Beard) {
-          ch_mesh.setEnabled(true);
-        }
-        break;
-      case "body":
-        ch_mesh.material.albedoColor = BABYLON.Color3.FromHexString(
-          avatarConfig.skinColor
-        );
-    }
-  });
 };
 
 //let speed = 0.04;
@@ -383,10 +222,12 @@ export const UpdateHealth = (healthAmount) => {
   defaultPipeline.imageProcessing.vignetteCameraFov = 1 - playerHealth / 100;
   if (playerHealth <= 25) {
     healthBar.background = "Red";
-  }
-  if (playerHealth <= 0) {
-    console.log("PLAYER LOST");
-    gameover();
+    if (playerHealth <= 0) {
+      console.log("PLAYER LOST");
+      // gameover();
+    }
+  } else {
+    healthBar.background = "Green";
   }
 };
 

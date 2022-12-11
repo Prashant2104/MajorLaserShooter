@@ -194,7 +194,7 @@ export const fireBullet = (enemy) => {
 export const GotHit = (enemy) => {
   enemyTakeDamgeSound.play();
   enemy.metadata.enemyMetadata[0] -= Math.floor(Math.random() * 8) + 6;
-  console.log(enemy.metadata);
+  // console.log(enemy.metadata);
   // console.log(enemy.metadata.MaxHealth);
 
   const advText = enemy.getChildren()[0].material.emissiveTexture;

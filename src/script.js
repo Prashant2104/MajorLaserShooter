@@ -21,7 +21,6 @@ import { GotHit, LoadEnemy } from "./EnemyAI";
 export let currentLoadedModel = null;
 export let expLoadedAnimations = [];
 export let enemySpawnPoint = null;
-export let gameover = null;
 export let defaultPipeline = null;
 export let portalAnim;
 let quality = "high";
@@ -150,7 +149,7 @@ const setupScene = async () => {
       rootMesh.name = "Environment";
       currentLoadedModel = rootMesh;
 
-      loadNavmesh("NavmeshData4.bin", scene).then(() => {
+      loadNavmesh("NavmeshData.bin", scene).then(() => {
         if (BABYLON.WebXRSessionManager.IsSessionSupportedAsync("immersive-vr"))
           createXRExperience();
       });

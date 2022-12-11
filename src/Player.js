@@ -5,12 +5,9 @@ import { defaultPipeline, gameover } from "./script";
 
 let Camera;
 
-var inputMap = {};
-
 export let importedanimationGroups = [];
 
 export let localPlayer;
-let runningAnim;
 let colliderMesh;
 
 let playerHealth = 100;
@@ -78,26 +75,27 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
           );
         }
       });
+
       spawnWeapon(scene, camera, camera);
     }
   );
 };
 
-const HealthBar = (advTex) => {
-  const healthBarBG = new GUI.Rectangle("HealthBarBG");
-  healthBarBG.background = "White";
-  healthBarBG.height = "25%";
-  healthBarBG.verticalAlignment = 0;
-  healthBarBG.cornerRadius = 20;
-  healthBarBG.thickness = 3;
-  advTex.addControl(healthBarBG);
+// const HealthBar = (advTex) => {
+//   const healthBarBG = new GUI.Rectangle("HealthBarBG");
+//   healthBarBG.background = "White";
+//   healthBarBG.height = "25%";
+//   healthBarBG.verticalAlignment = 0;
+//   healthBarBG.cornerRadius = 20;
+//   healthBarBG.thickness = 3;
+//   advTex.addControl(healthBarBG);
 
-  const healthBar = new GUI.Rectangle("HealthBar");
-  healthBarBG.addControl(healthBar);
-  healthBar.horizontalAlignment = 0;
-  healthBar.background = "Green";
-  healthBar.cornerRadius = 20;
-};
+//   const healthBar = new GUI.Rectangle("HealthBar");
+//   healthBarBG.addControl(healthBar);
+//   healthBar.horizontalAlignment = 0;
+//   healthBar.background = "Green";
+//   healthBar.cornerRadius = 20;
+// };
 export let LocalAdvTex;
 const LocalPlayerUI = () => {
   LocalAdvTex = GUI.AdvancedDynamicTexture.CreateFullscreenUI("PlayerUI");
@@ -134,21 +132,16 @@ const LocalPlayerUI = () => {
 
   const scoreText = new GUI.TextBlock("ScoreText");
   scorePanel.addControl(scoreText);
-  // scoreText.horizontalAlignment = 1;
   scoreText.fontSize = 22.5;
   scoreText.paddingTop = "1px";
   scoreText.text = playerScore.toString();
   scoreText.color = "white";
 };
 
-//let speed = 0.04;
-
 export const keyboardEvents = (scene) => {
   scene.actionManager = new BABYLON.ActionManager(scene);
-
   scene.onPointerDown = () => {
     PlayerShoot(scene, Camera);
-    // getNavmeshData();
   };
 };
 

@@ -72,15 +72,15 @@ export const spawnWeapon = (scene, camera, player) => {
   laserMat.unlit = true;
   laserMat.diffuseColor = BABYLON.Color3.Red();
 
-  laser = new BABYLON.MeshBuilder.CreateCapsule(
+  laser = new BABYLON.MeshBuilder.CreateIcoSphere(
     "PlayerLaser",
-    { radius: 0.025, tessellation: 8 },
+    { radius: 0.05 },
     scene
     // (meshes) => {
     //   meshes[0].unfreezeWorldMatrix();
     // }
   );
-  laser.rotation.x = Math.PI / 2;
+  // laser.rotation.x = Math.PI / 2;
   laser.material = laserMat;
   /********** Laser Prefab Setup **********/
 };

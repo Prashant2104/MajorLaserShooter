@@ -16,7 +16,7 @@ import {
 import { PortalMeshes } from "./Portals";
 import { HeliConstAudio, ImportAudio } from "./Audio";
 import { LoadHealth } from "./Health";
-import { LoadEnemy } from "./EnemyAI";
+import { GotHit, LoadEnemy } from "./EnemyAI";
 
 export let currentLoadedModel = null;
 export let expLoadedAnimations = [];
@@ -31,13 +31,9 @@ const engine = new BABYLON.Engine(canvas, true);
 
 const scene = new BABYLON.Scene(engine);
 scene.ambientColor = new BABYLON.Color3(1, 1, 1);
-scene.debugLayer.show();
+scene.enablePhysics();
 
-const Setup = async () => {
-  // await Ammo();
-  scene.enablePhysics();
-};
-Setup();
+scene.debugLayer.show();
 
 const dsm = new BABYLON.DeviceSourceManager(scene.getEngine());
 engine.runRenderLoop(() => {
@@ -306,9 +302,27 @@ const createXRExperience = async () => {
             case "xr-standard-trigger":
               component.onButtonStateChangedObservable.add(() => {
                 if (component.pressed) {
-                  console.log(
+                  if (
                     xr.pointerSelection.getMeshUnderPointer(controller.uniqueId)
-                  );
+                  ) {
+                    console.log(
+                      xr.pointerSelection.getMeshUnderPointer(
+                        controller.uniqueId
+                      ).name
+                    );
+                    if (
+                      xr.pointerSelection
+                        .getMeshUnderPointer(controller.uniqueId)
+                        .name.includes("HitTarget")
+                    ) {
+                      console.log("Enemy");
+                      GotHit(
+                        xr.pointerSelection.getMeshUnderPointer(
+                          controller.uniqueId
+                        )
+                      );
+                    }
+                  }
                 }
               });
               break;

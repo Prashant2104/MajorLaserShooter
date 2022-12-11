@@ -148,7 +148,7 @@ export const FollowPlayer = (PlayerPos) => {
       PlayerPos,
       crowd.getAgentPosition(agents[i])
     );
-    if (distVec < 100) {
+    if (distVec < followDist) {
       crowd.agentGoto(agents[i], navigationPlugin.getClosestPoint(PlayerPos));
       crowd.transforms[i].lookAt(PlayerPos, 0, 0, 0);
       if (crowd.transforms[i].metadata) {

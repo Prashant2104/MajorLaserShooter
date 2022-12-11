@@ -36,7 +36,7 @@ const loadReticle = (scene, camera) => {
   reticle.isPickable = false;
   reticle.rotation.set(Math.PI / 2, camera.rotation.y, Math.PI);
   const reticleMat = new BABYLON.StandardMaterial("reticleMat", scene);
-  const tex = new BABYLON.Texture(reticleImg, scene);
+  const tex = new BABYLON.Texture("Models/Reticle.png", scene);
   reticleMat.diffuseTexture = tex;
   reticleMat.emissiveTexture = tex;
   reticleMat.opacityTexture = tex;
@@ -65,7 +65,7 @@ export const pointerEvents = (scene, camera, anim) => {
     }
   });
 
-  // const reticle = loadReticle(scene, camera);
+  const reticle = loadReticle(scene, camera);
   scene.onPointerObservable.add((pointerInfo) => {
     switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERMOVE:

@@ -46,6 +46,7 @@ build/
 .firebaserc
 firebase.json
 src/Firebase.js
+dist/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

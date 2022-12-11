@@ -13,6 +13,8 @@ let colliderMesh;
 let playerHealth = 100;
 export let playerScore = 0;
 
+let playerSPwnPos = new BABYLON.Vector3(-500, 3.5, -400);
+
 export const spawnLocalPlayer = async (userid, camera, scene) => {
   Camera = camera;
   let gender = "Male_Final.glb";
@@ -40,9 +42,9 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
       colliderMesh.name = "PlayerColliderMesh";
       colliderMesh.isPickable = false;
       colliderMesh.addChild(localPlayer);
-      colliderMesh.position = new BABYLON.Vector3(-500, 5, -400);
+      colliderMesh.position = playerSPwnPos;
       colliderMesh.scaling = new BABYLON.Vector3(2.5, 2.5, 2.5);
-      colliderMesh.rotation = new BABYLON.Vector3(0, 0, 0);
+      colliderMesh.rotation = new BABYLON.Vector3.Zero();
       colliderMesh.metadata = { videoAdded: false };
 
       colliderMesh.physicsImpostor = new BABYLON.PhysicsImpostor(

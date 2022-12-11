@@ -32,7 +32,7 @@ const scene = new BABYLON.Scene(engine);
 scene.ambientColor = new BABYLON.Color3(1, 1, 1);
 scene.enablePhysics();
 
-scene.debugLayer.show();
+// scene.debugLayer.show();
 
 const dsm = new BABYLON.DeviceSourceManager(scene.getEngine());
 engine.runRenderLoop(() => {

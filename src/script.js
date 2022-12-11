@@ -119,10 +119,6 @@ skybox.material.reflectionTexture.rotationY = 3;
 /********** Lights **********/
 
 keyboardEvents(scene);
-// spawnLocalPlayer("Pacific", camera, scene).then(() => {
-//   setupScene();
-// });
-
 const setupScene = async () => {
   BABYLON.SceneLoader.ImportMesh(
     "",

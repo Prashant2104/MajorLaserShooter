@@ -133,6 +133,7 @@ export const CreateEnemyAgent = (enemyInstance) => {
     separationWeight: 1.0,
   };
   crowd.addAgent(randomPos, agentParams, transform);
+
   // console.log("enemy");
 };
 
@@ -140,17 +141,24 @@ export const FollowPlayer = (PlayerPos) => {
   let agents = crowd.getAgents();
   let i;
   for (i = 1; i < agents.length; i++) {
+    // if (i == playerAgentIdx) {
+    //   continue;
+    // }
     let distVec = BABYLON.Vector3.Distance(
       PlayerPos,
       crowd.getAgentPosition(agents[i])
     );
-    if (distVec <= followDist) {
+    if (distVec < 100) {
       crowd.agentGoto(agents[i], navigationPlugin.getClosestPoint(PlayerPos));
       crowd.transforms[i].lookAt(PlayerPos, 0, 0, 0);
-      if (distVec <= shootDist) {
-        crowd.transforms[i].metadata.canShoot = true;
+      if (crowd.transforms[i].metadata) {
+        if (distVec <= shootDist) {
+          crowd.transforms[i].metadata.canShoot = true;
+        } else {
+          crowd.transforms[i].metadata.canShoot = false;
+        }
       } else {
-        crowd.transforms[i].metadata.canShoot = false;
+        crowd.removeAgent(i);
       }
     }
     //  else {

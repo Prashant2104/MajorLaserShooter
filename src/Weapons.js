@@ -56,7 +56,7 @@ export const spawnWeapon = (scene, camera, player) => {
 
   crossHair = BABYLON.MeshBuilder.CreatePlane(
     "CrossHair",
-    { size: 0.1 },
+    { size: 0.07 },
     scene
   );
   crossHair.parent = camera;
@@ -74,7 +74,7 @@ export const spawnWeapon = (scene, camera, player) => {
 
   laser = new BABYLON.MeshBuilder.CreateCapsule(
     "PlayerLaser",
-    { radius: 0.1, tessellation: 8 },
+    { radius: 0.025, tessellation: 8 },
     scene
     // (meshes) => {
     //   meshes[0].unfreezeWorldMatrix();

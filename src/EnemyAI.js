@@ -68,7 +68,7 @@ export const LoadEnemy = async (scene, player) => {
         element.dispose();
       }
     });
-    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
+    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   BABYLON.SceneLoader.LoadAssetContainerAsync(
@@ -84,7 +84,7 @@ export const LoadEnemy = async (scene, player) => {
     hitTarget.checkCollisions = true;
     hitTarget.visibility = 0;
     enemyRoot_2.addChild(hitTarget);
-    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
+    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   BABYLON.SceneLoader.LoadAssetContainerAsync(
@@ -102,9 +102,7 @@ export const LoadEnemy = async (scene, player) => {
     hitTarget.checkCollisions = true;
     hitTarget.visibility = 0;
     enemyRoot_3.addChild(hitTarget);
-    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
-
-    // InstansiateEnemies_3(scene, player, defaultEnemySpawnCount, defaultHealth);
+    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   /********** Laser Prefab Setup **********/

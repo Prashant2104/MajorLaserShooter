@@ -8,6 +8,7 @@ import * as BABYLON from "babylonjs";
 import { enableNavigation } from "./Navigation";
 import { CreatePlayerAgent, loadNavmesh } from "./NavmeshAgent";
 import {
+  camTarget,
   inputController,
   keyboardEvents,
   localPlayer,
@@ -17,7 +18,7 @@ import { PortalMeshes } from "./Portals";
 import { HeliConstAudio, ImportAudio } from "./Audio";
 import { LoadHealth } from "./Health";
 import { GotHit, LoadEnemy } from "./EnemyAI";
-import { PlayerShootVR } from "./Weapons";
+import { currGun, PlayerShootVR, spawnWeapon } from "./Weapons";
 
 export let currentLoadedModel = null;
 export let expLoadedAnimations = [];
@@ -33,7 +34,9 @@ const scene = new BABYLON.Scene(engine);
 scene.ambientColor = new BABYLON.Color3(1, 1, 1);
 scene.enablePhysics();
 
-scene.debugLayer.show();
+console.log(scene);
+
+// scene.debugLayer.show();
 
 const dsm = new BABYLON.DeviceSourceManager(scene.getEngine());
 engine.runRenderLoop(() => {
@@ -259,6 +262,7 @@ const setupScene = async () => {
           LoadHealth(scene);
           CreatePlayerAgent();
           LoadEnemy(scene, localPlayer.parent);
+          spawnWeapon(scene, camera, camera);
         });
       });
     }
@@ -269,16 +273,6 @@ export const createXRExperience = async (gunMesh) => {
   const webXRInput = await xr.input;
   const featuresManager = xr.baseExperience.featuresManager;
 
-  // const teleportation = featuresManager.enableFeature(
-  //   BABYLON.WebXRFeatureName.TELEPORTATION,
-  //   "stable" /* or latest */,
-  //   {
-  //     xrInput: webXRInput,
-  //     // add options here
-  //     floorMeshes: [scene.getMeshByName("navmeshdebug")],
-  //     renderingGroupId: 1,
-  //   }
-  // );
   const teleportation = featuresManager.enableFeature(
     BABYLON.WebXRFeatureName.TELEPORTATION,
     "stable",
@@ -296,51 +290,21 @@ export const createXRExperience = async (gunMesh) => {
   // teleportation.backwardsTeleportationDistance = 1.0;
   // teleportation.parabolicCheckRadius = 3;
   // xr.baseExperience.camera.setTransformationFromNonVRCamera();
+  xr.baseExperience.onStateChangedObservable.add(() => {
+    if (xr.baseExperience.state == 2) {
+      console.log("In Vr");
+      currGun.rotation.x = 0.6981317;
+      currGun.position.x = 0;
+      currGun.position.y = 0;
+      currGun.position.z = 0;
+    }
+    if (xr.baseExperience.state == 3) {
+      console.log("Out Vr");
+      spawnWeapon(scene, camera, camera);
+    }
+  });
 
-  // webXRInput.onControllerAddedObservable.add((controller) => {
-  //   controller.onMotionControllerInitObservable.add((motionController) => {
-  //     if (
-  //       motionController.handness === "left" ||
-  //       motionController.handness === "right"
-  //     ) {
-  //       const xr_ids = motionController.getComponentIds();
-  //       for (let index = 0; index < xr_ids.length; index++) {
-  //         let component = motionController.getComponent(xr_ids[index]);
-
-  //         switch (xr_ids[index]) {
-  //           case "xr-standard-trigger":
-  //             component.onButtonStateChangedObservable.add(() => {
-  //               if (component.pressed) {
-  //                 if (
-  //                   xr.pointerSelection.getMeshUnderPointer(controller.uniqueId)
-  //                 ) {
-  //                   console.log(
-  //                     xr.pointerSelection.getMeshUnderPointer(
-  //                       controller.uniqueId
-  //                     ).name
-  //                   );
-  //                   if (
-  //                     xr.pointerSelection
-  //                       .getMeshUnderPointer(controller.uniqueId)
-  //                       .name.includes("HitTarget")
-  //                   ) {
-  //                     console.log("Enemy");
-  //                     GotHit(
-  //                       xr.pointerSelection.getMeshUnderPointer(
-  //                         controller.uniqueId
-  //                       )
-  //                     );
-  //                   }
-  //                 }
-  //               }
-  //             });
-  //             break;
-  //         }
-  //       }
-  //     }
-  //   });
-  // });
-
+  xr.baseExperience.state;
   xr.input.onControllerAddedObservable.add((controller) => {
     controller.onMotionControllerInitObservable.add((motionController) => {
       if (motionController.handness === "left") {
@@ -430,7 +394,6 @@ export const createXRExperience = async (gunMesh) => {
         squeezeComponent.onButtonStateChangedObservable.add(() => {
           if (squeezeComponent.pressed) {
             console.log("Right Squeeze Pressed");
-            // PlayerShootVR(scene);
           } else {
             console.log("Right Squeeze Released");
           }

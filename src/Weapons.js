@@ -38,8 +38,8 @@ export const spawnWeapon = (scene, camera, player) => {
       }
     });
     laserGunRoot.setParent(player);
-    laserGunRoot.position.x = 0.1;
-    laserGunRoot.position.y = -0.25;
+    laserGunRoot.position.x = 0.15;
+    laserGunRoot.position.y = -0.4;
     laserGunRoot.position.z = 0.2;
     laserGunRoot.rotation = new BABYLON.Vector3(0, 0, Math.PI);
     currGun = laserGunRoot;

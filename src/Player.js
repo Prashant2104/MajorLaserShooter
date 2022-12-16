@@ -8,6 +8,7 @@ let Camera;
 export let importedanimationGroups = [];
 
 export let localPlayer;
+export let camTarget;
 let colliderMesh;
 
 let playerHealth = 100;
@@ -57,7 +58,7 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
       localPlayer.position = new BABYLON.Vector3(0, -0.9, 0);
       localPlayer.rotation.y = 0;
 
-      const camTarget = new BABYLON.Mesh("CamTarget", scene, colliderMesh);
+      camTarget = new BABYLON.Mesh("CamTarget", scene, colliderMesh);
       camTarget.position.y = 0.9;
       //camTarget.position.z = 0.15;
 
@@ -77,8 +78,6 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
           );
         }
       });
-
-      spawnWeapon(scene, camera, camera);
     }
   );
 };
@@ -143,7 +142,7 @@ const LocalPlayerUI = () => {
 export const keyboardEvents = (scene) => {
   scene.actionManager = new BABYLON.ActionManager(scene);
   scene.onPointerDown = () => {
-    // PlayerShoot(scene, Camera);
+    PlayerShoot(scene, Camera);
   };
 };
 

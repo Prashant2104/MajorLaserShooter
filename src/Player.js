@@ -143,7 +143,7 @@ const LocalPlayerUI = () => {
 export const keyboardEvents = (scene) => {
   scene.actionManager = new BABYLON.ActionManager(scene);
   scene.onPointerDown = () => {
-    PlayerShoot(scene, Camera);
+    // PlayerShoot(scene, Camera);
   };
 };
 

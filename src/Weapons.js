@@ -7,7 +7,7 @@ import { createXRExperience } from "./script";
 export let bulletCount = 100;
 let width;
 let height;
-let canFire = true;
+let canFire = false;
 let fireDist = 175;
 fireDist = Math.pow(fireDist, 2);
 
@@ -20,6 +20,9 @@ let heliHitCount = 0;
 
 let laserGunRoot;
 export let currGun;
+
+let VrRay = null;
+let VrRayHelper = null;
 
 export const spawnWeapon = (scene, camera, player) => {
   BABYLON.SceneLoader.ImportMeshAsync(
@@ -76,29 +79,48 @@ export const spawnWeapon = (scene, camera, player) => {
     // laser.rotation.x = Math.PI / 2;
     laser.material = laserMat;
     /********** Laser Prefab Setup **********/
-
+    canFire = true;
     if (BABYLON.WebXRSessionManager.IsSessionSupportedAsync("immersive-vr"))
       createXRExperience(laserGunRoot);
   });
 };
 
-export const PlayerShootVR = (scene) => {
-  console.log("SHoot called");
-  let origin = activeSpawnPoint.getAbsolutePosition();
+export const SetupVrWeapon = (scene) => {
+  currGun.rotation.x = 0.6981317;
+  currGun.position = new BABYLON.Vector3.Zero();
+  currGun.scaling.scaleInPlace(0.25);
+  console.log(currGun.scaling);
 
-  let forward = new BABYLON.Vector3(0, 0, 1);
-  forward = vecToLocal(forward, activeSpawnPoint);
+  VrRay = new BABYLON.Ray();
+  VrRayHelper = new BABYLON.RayHelper(VrRay);
 
-  let direction = forward.subtract(origin);
-  direction = BABYLON.Vector3.Normalize(direction);
+  let dir = new BABYLON.Vector3(0, 0, 1);
+  let rayOrigin = new BABYLON.Vector3.Zero();
   let length = 1000;
 
-  let ray = new BABYLON.Ray(origin, direction, length);
-  let hit = scene.pickWithRay(ray);
-  console.log(hit);
+  VrRayHelper.attachToMesh(activeSpawnPoint, dir, rayOrigin, length);
+  VrRayHelper.show(scene);
 
-  if (canFire && hit == true) {
+  // scene.registerBeforeRender(() => {
+  //   let hit = scene.pickWithRay(VrRay);
+  //   if (hit.hit) {
+  //     VrRayHelper.show(scene, BABYLON.Color3.Red());
+  //   } else {
+  //     VrRayHelper.show(scene, BABYLON.Color3.Green());
+  //   }
+  // });
+};
+
+export const ExitVrWeapon = () => {
+  VrRayHelper.dispose();
+};
+
+export const PlayerShootVR = (scene) => {
+  let hit = scene.pickWithRay(VrRay);
+
+  if (canFire && hit.hit) {
     ShootAudio();
+
     let hitMesh = hit.pickedMesh;
     let hitPoint = hit.pickedPoint;
 
@@ -118,8 +140,6 @@ export const PlayerShootVR = (scene) => {
     //     console.log(hitMesh);
     //   }
     // }
-    console.log("rwfuoba");
-    console.log(hitMesh.name);
 
     /********** spawning bullets **********/
     let aimDir = hitPoint
@@ -235,10 +255,4 @@ export const PlayerShoot = (scene, camera) => {
     }, 50);
     /********** shooting bullets **********/
   }
-};
-
-const vecToLocal = (vector, mesh) => {
-  var m = mesh.getWorldMatrix();
-  var v = BABYLON.Vector3.TransformCoordinates(vector, m);
-  return v;
 };

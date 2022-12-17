@@ -1,7 +1,7 @@
 import * as BABYLON from "babylonjs";
 import * as GUI from "babylonjs-gui";
 import { PlayerShoot, spawnWeapon } from "./Weapons";
-import { defaultPipeline, gameover } from "./script";
+import { defaultPipeline, gameover, inVr } from "./script";
 
 let Camera;
 
@@ -142,7 +142,7 @@ const LocalPlayerUI = () => {
 export const keyboardEvents = (scene) => {
   scene.actionManager = new BABYLON.ActionManager(scene);
   scene.onPointerDown = () => {
-    PlayerShoot(scene, Camera);
+    if (!inVr) PlayerShoot(scene, Camera);
   };
 };
 

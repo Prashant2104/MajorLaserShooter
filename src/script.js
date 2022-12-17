@@ -18,13 +18,20 @@ import { PortalMeshes } from "./Portals";
 import { HeliConstAudio, ImportAudio } from "./Audio";
 import { LoadHealth } from "./Health";
 import { GotHit, LoadEnemy } from "./EnemyAI";
-import { currGun, PlayerShootVR, spawnWeapon } from "./Weapons";
+import {
+  currGun,
+  ExitVrWeapon,
+  PlayerShootVR,
+  SetupVrWeapon,
+  spawnWeapon,
+} from "./Weapons";
 
 export let currentLoadedModel = null;
 export let expLoadedAnimations = [];
 export let enemySpawnPoint = null;
 export let defaultPipeline = null;
 export let portalAnim;
+export let inVr = false;
 let quality = "high";
 
 const canvas = document.getElementById("renderCanvas");
@@ -280,7 +287,7 @@ export const createXRExperience = async (gunMesh) => {
       xrInput: xr.input,
       floorMeshes: [scene.getMeshByName("NavMeshDebug")],
       forceHandedness: "left",
-      timeToTeleport: 2000,
+      timeToTeleport: 1000,
       useMainComponentOnly: true,
     }
   );
@@ -293,13 +300,14 @@ export const createXRExperience = async (gunMesh) => {
   xr.baseExperience.onStateChangedObservable.add(() => {
     if (xr.baseExperience.state == 2) {
       console.log("In Vr");
-      currGun.rotation.x = 0.6981317;
-      currGun.position.x = 0;
-      currGun.position.y = 0;
-      currGun.position.z = 0;
+      inVr = true;
+      SetupVrWeapon(scene);
     }
     if (xr.baseExperience.state == 3) {
       console.log("Out Vr");
+      inVr = false;
+
+      ExitVrWeapon();
       spawnWeapon(scene, camera, camera);
     }
   });

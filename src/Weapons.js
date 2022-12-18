@@ -2,6 +2,7 @@ import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
 import { ShootAudio } from "./Audio";
 import { GotHit } from "./EnemyAI";
+import { LocalPlayerUI_VR } from "./Player";
 import { createXRExperience } from "./script";
 
 export let bulletCount = 100;
@@ -100,6 +101,8 @@ export const SetupVrWeapon = (scene) => {
 
   VrRayHelper.attachToMesh(activeSpawnPoint, dir, rayOrigin, length);
   VrRayHelper.show(scene);
+
+  LocalPlayerUI_VR(currGun, scene);
 
   // scene.registerBeforeRender(() => {
   //   let hit = scene.pickWithRay(VrRay);

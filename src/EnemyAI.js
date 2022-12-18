@@ -39,7 +39,7 @@ export const LoadEnemy = async (scene, player) => {
 
   EnemyFlyConstAudio(scene);
 
-  explosionParticle = await BABYLON.ParticleHelper.CreateAsync(
+  let explosionParticle = await BABYLON.ParticleHelper.CreateAsync(
     "explosion",
     scene
   );
@@ -68,7 +68,7 @@ export const LoadEnemy = async (scene, player) => {
         element.dispose();
       }
     });
-    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
+    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   BABYLON.SceneLoader.LoadAssetContainerAsync(
@@ -84,7 +84,7 @@ export const LoadEnemy = async (scene, player) => {
     hitTarget.checkCollisions = true;
     hitTarget.visibility = 0;
     enemyRoot_2.addChild(hitTarget);
-    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
+    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   BABYLON.SceneLoader.LoadAssetContainerAsync(
@@ -102,7 +102,7 @@ export const LoadEnemy = async (scene, player) => {
     hitTarget.checkCollisions = true;
     hitTarget.visibility = 0;
     enemyRoot_3.addChild(hitTarget);
-    // InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
+    InstansiateEnemies(defaultEnemySpawnCount, defaultHealth, container);
   });
 
   /********** Laser Prefab Setup **********/

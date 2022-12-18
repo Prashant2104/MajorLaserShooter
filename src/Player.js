@@ -1,7 +1,7 @@
 import * as BABYLON from "babylonjs";
 import * as GUI from "babylonjs-gui";
 import { PlayerShoot, spawnWeapon } from "./Weapons";
-import { defaultPipeline, gameover, inVr } from "./script";
+import { defaultPipeline, GameOver, gameover, inVr } from "./script";
 
 let Camera;
 
@@ -14,7 +14,19 @@ let colliderMesh;
 let playerHealth = 100;
 export let playerScore = 0;
 
-let playerSPwnPos = new BABYLON.Vector3(-500, 3.5, -400);
+let playerSPwnPos = new BABYLON.Vector3(-500, 3, -400);
+
+export const EnterVrPlayer = (scene, VRCAM) => {
+  // colliderMesh.parent = VRCAM;
+  scene.registerBeforeRender(() => {
+    if (inVr)
+      colliderMesh.position = new BABYLON.Vector3(
+        VRCAM.position.x,
+        colliderMesh.position.y,
+        VRCAM.position.z
+      );
+  });
+};
 
 export const spawnLocalPlayer = async (userid, camera, scene) => {
   Camera = camera;
@@ -35,7 +47,7 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
 
       colliderMesh = BABYLON.MeshBuilder.CreateBox(
         userid,
-        { height: 1.8 },
+        { height: 1 },
         scene
       );
       colliderMesh.checkCollisions = true;
@@ -44,7 +56,7 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
       colliderMesh.isPickable = false;
       colliderMesh.addChild(localPlayer);
       colliderMesh.position = playerSPwnPos;
-      colliderMesh.scaling = new BABYLON.Vector3(2.5, 2.5, 2.5);
+      colliderMesh.scaling = new BABYLON.Vector3(2, 2, 2);
       colliderMesh.rotation = new BABYLON.Vector3.Zero();
       colliderMesh.metadata = { videoAdded: false };
 
@@ -82,23 +94,8 @@ export const spawnLocalPlayer = async (userid, camera, scene) => {
   );
 };
 
-// const HealthBar = (advTex) => {
-//   const healthBarBG = new GUI.Rectangle("HealthBarBG");
-//   healthBarBG.background = "White";
-//   healthBarBG.height = "25%";
-//   healthBarBG.verticalAlignment = 0;
-//   healthBarBG.cornerRadius = 20;
-//   healthBarBG.thickness = 3;
-//   advTex.addControl(healthBarBG);
-
-//   const healthBar = new GUI.Rectangle("HealthBar");
-//   healthBarBG.addControl(healthBar);
-//   healthBar.horizontalAlignment = 0;
-//   healthBar.background = "Green";
-//   healthBar.cornerRadius = 20;
-// };
 export let LocalAdvTex;
-const LocalPlayerUI = () => {
+export const LocalPlayerUI = () => {
   LocalAdvTex = GUI.AdvancedDynamicTexture.CreateFullscreenUI("PlayerUI");
 
   const healthBarBG = new GUI.Rectangle("HealthBarBG");
@@ -107,6 +104,67 @@ const LocalPlayerUI = () => {
   healthBarBG.width = "75%";
   healthBarBG.top = 12;
   healthBarBG.paddingTopInPixels = 5;
+  healthBarBG.verticalAlignment = 0;
+  healthBarBG.cornerRadius = 20;
+  healthBarBG.thickness = 3;
+  LocalAdvTex.addControl(healthBarBG);
+
+  const healthBar = new GUI.Rectangle("HealthBar");
+  healthBarBG.addControl(healthBar);
+  healthBar.horizontalAlignment = 0;
+  healthBar.background = "Green";
+  healthBar.cornerRadius = 20;
+
+  const scorePanel = new GUI.Rectangle("scorePanel");
+  scorePanel.background = "Black";
+  scorePanel.alpha = 0.5;
+  scorePanel.verticalAlignment = 0;
+  scorePanel.horizontalAlignment = 0;
+  scorePanel.height = "7.5%";
+  scorePanel.width = "7%";
+  scorePanel.paddingTopInPixels = 10;
+  scorePanel.paddingLeftInPixels = 50;
+  scorePanel.cornerRadius = 7.5;
+  scorePanel.thickness = 1.5;
+  LocalAdvTex.addControl(scorePanel);
+
+  const scoreText = new GUI.TextBlock("ScoreText");
+  scorePanel.addControl(scoreText);
+  scoreText.fontSize = 22.5;
+  scoreText.paddingTop = "1px";
+  scoreText.text = playerScore.toString();
+  scoreText.color = "white";
+};
+export const LocalPlayerUI_VR = (gunMesh, currScene) => {
+  let HealthUI = BABYLON.MeshBuilder.CreatePlane(
+    "PlayerHealthUI_VR",
+    {
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE,
+    },
+    currScene
+  );
+  HealthUI.isPickable = false;
+  HealthUI.parent = gunMesh;
+  HealthUI.position = new BABYLON.Vector3(0, -0.5, 0);
+  HealthUI.rotation = new BABYLON.Vector3(0, Math.PI, Math.PI);
+  HealthUI.scaling = new BABYLON.Vector3(1.25, 0.5, 0.25);
+  HealthUI.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+
+  console.log(HealthUI);
+  LocalAdvTex.dispose();
+  LocalAdvTex = GUI.AdvancedDynamicTexture.CreateForMesh(
+    HealthUI,
+    500,
+    150,
+    false,
+    null,
+    true
+  );
+
+  const healthBarBG = new GUI.Rectangle("PlayerHealthBarBG_VR");
+  healthBarBG.background = "White";
+  healthBarBG.height = "25%";
+  healthBarBG.width = "100%";
   healthBarBG.verticalAlignment = 0;
   healthBarBG.cornerRadius = 20;
   healthBarBG.thickness = 3;
@@ -179,7 +237,6 @@ export const inputController = (
   }
 
   if (jump != 0 && colliderMesh.position.y <= 3.3) {
-    // console.log("Jump");
     colliderMesh.physicsImpostor.applyImpulse(
       colliderMesh.up.scale(10),
       colliderMesh.getAbsolutePosition()
@@ -218,7 +275,7 @@ export const UpdateHealth = (healthAmount) => {
     healthBar.background = "Red";
     if (playerHealth <= 0) {
       console.log("PLAYER LOST");
-      // gameover();
+      GameOver();
     }
   } else {
     healthBar.background = "Green";

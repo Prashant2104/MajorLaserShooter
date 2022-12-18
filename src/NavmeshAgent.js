@@ -75,9 +75,9 @@ export const CreatePlayerAgent = () => {
     if (localPlayer) {
       FollowPlayer(
         new BABYLON.Vector3(
-          localPlayer.parent.position.x,
+          localPlayer.getAbsolutePosition().x,
           0.03,
-          localPlayer.parent.position.z
+          localPlayer.getAbsolutePosition().z
         )
       );
     }

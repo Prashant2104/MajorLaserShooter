@@ -9,9 +9,11 @@ import { enableNavigation } from "./Navigation";
 import { CreatePlayerAgent, loadNavmesh } from "./NavmeshAgent";
 import {
   camTarget,
+  EnterVrPlayer,
   inputController,
   keyboardEvents,
   localPlayer,
+  LocalPlayerUI,
   spawnLocalPlayer,
 } from "./Player";
 import { PortalMeshes } from "./Portals";
@@ -32,6 +34,7 @@ export let enemySpawnPoint = null;
 export let defaultPipeline = null;
 export let portalAnim;
 export let inVr = false;
+let VRShot = false;
 let quality = "high";
 
 const canvas = document.getElementById("renderCanvas");
@@ -275,8 +278,10 @@ const setupScene = async () => {
     }
   );
 };
+
+let xr = null;
 export const createXRExperience = async (gunMesh) => {
-  const xr = await scene.createDefaultXRExperienceAsync();
+  xr = await scene.createDefaultXRExperienceAsync();
   const webXRInput = await xr.input;
   const featuresManager = xr.baseExperience.featuresManager;
 
@@ -292,149 +297,45 @@ export const createXRExperience = async (gunMesh) => {
     }
   );
 
-  // teleportation.rotationEnabled = true;
-  // teleportation.backwardsMovementEnabled = true;
+  teleportation.rotationEnabled = true;
+  teleportation.backwardsMovementEnabled = true;
+
   // teleportation.backwardsTeleportationDistance = 1.0;
   // teleportation.parabolicCheckRadius = 3;
-  // xr.baseExperience.camera.setTransformationFromNonVRCamera();
-  xr.baseExperience.onStateChangedObservable.add(() => {
-    if (xr.baseExperience.state == 2) {
-      console.log("In Vr");
-      inVr = true;
-      SetupVrWeapon(scene);
-    }
-    if (xr.baseExperience.state == 3) {
-      console.log("Out Vr");
-      inVr = false;
+  xr.baseExperience.camera.setTransformationFromNonVRCamera();
 
-      ExitVrWeapon();
-      spawnWeapon(scene, camera, camera);
-    }
+  xr.baseExperience.sessionManager.onXRSessionInit.add(() => {
+    console.log("In Vr");
+    inVr = true;
+    EnterVrPlayer(scene, xr.baseExperience.camera);
+    SetupVrWeapon(scene);
+  });
+  xr.baseExperience.sessionManager.onXRSessionEnded.add(() => {
+    console.log("Out Vr");
+    inVr = false;
+    xr.baseExperience.camera.dispose();
+
+    ExitVrWeapon();
+    LocalPlayerUI();
+    spawnWeapon(scene, camera, camera);
   });
 
-  xr.baseExperience.state;
   xr.input.onControllerAddedObservable.add((controller) => {
     controller.onMotionControllerInitObservable.add((motionController) => {
-      if (motionController.handness === "left") {
-        const xr_ids = motionController.getComponentIds();
-        let triggerComponent = motionController.getComponent(xr_ids[0]); //xr-standard-trigger
-        triggerComponent.onButtonStateChangedObservable.add(() => {
-          if (triggerComponent.pressed) {
-            console.log("Left Trigger Pressed");
-          } else {
-            console.log("Left Trigger Released");
-          }
-        });
-        let squeezeComponent = motionController.getComponent(xr_ids[1]); //xr-standard-squeeze
-        squeezeComponent.onButtonStateChangedObservable.add(() => {
-          if (squeezeComponent.pressed) {
-            console.log("Left Squeeze Pressed");
-          } else {
-            console.log("Left Squeeze Released");
-          }
-        });
-        let thumbstickComponent = motionController.getComponent(xr_ids[2]); //xr-standard-thumbstick
-        thumbstickComponent.onButtonStateChangedObservable.add(() => {
-          if (thumbstickComponent.pressed) {
-            console.log("Left Thumb Pressed");
-          } else {
-            console.log("Left Thumb Released");
-          }
-        });
-        thumbstickComponent.onAxisValueChangedObservable.add((axes) => {
-          //https://playground.babylonjs.com/#INBVUY#87
-          //inactivate camera rotation : not working so far
-          /*
-                    let rotationValue = 0;
-                    const matrix = new BABYLON.Matrix();
-                    let deviceRotationQuaternion = webXRInput.xrCamera.getDirection(BABYLON.Axis.Z).toQuaternion(); // webXRInput.xrCamera.rotationQuaternion;
-                    var angle = rotationValue * (Math.PI / 8);
-                    var quaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, angle);
-                    const move = new BABYLON.Vector3(0,0,0);
-                    deviceRotationQuaternion = deviceRotationQuaternion.multiply(quaternion);
-                    BABYLON.Matrix.FromQuaternionToRef(deviceRotationQuaternion, matrix);
-                    const addPos = BABYLON.Vector3.TransformCoordinates(move, matrix);
-                    addPos.y = 0;
-
-                    webXRInput.xrCamera.position = webXRInput.xrCamera.position.add(addPos);
-                   // webXRInput.xrCamera.rotationQuaternion = BABYLON.Quaternion.Identity();
-                    
-                    //webXRInput.xrCamera.rotation = new BABYLON.Vector3(0,0,0);
-                    */
-          //Box_Left_ThumbStick is moving according to stick axes but camera rotation is also changing..
-          // Box_Left_ThumbStick.position.x += (axes.x)/100;
-          //  Box_Left_ThumbStick.position.y -= (axes.y)/100;
-          // console.log(values.x, values.y);
-        });
-
-        let xbuttonComponent = motionController.getComponent(xr_ids[3]); //x-button
-        xbuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (xbuttonComponent.pressed) {
-            console.log("X Pressed");
-          } else {
-            console.log("X Released");
-          }
-        });
-        let ybuttonComponent = motionController.getComponent(xr_ids[4]); //y-button
-        ybuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (ybuttonComponent.pressed) {
-            console.log("Y Pressed");
-          } else {
-            console.log("Y Released");
-          }
-        });
-      }
       if (motionController.handness === "right") {
         motionController.onModelLoadedObservable.add(() => {
           motionController.rootMesh = gunMesh;
         });
         const xr_ids = motionController.getComponentIds();
-        let triggerComponent = motionController.getComponent(xr_ids[0]); //xr-standard-trigger
+        let triggerComponent = motionController.getComponent(xr_ids[0]);
         triggerComponent.onButtonStateChangedObservable.add(() => {
           if (triggerComponent.pressed) {
-            console.log("Right Trigger Pressed");
-            PlayerShootVR(scene);
+            if (!VRShot) {
+              VRShot = true;
+              PlayerShootVR(scene);
+            }
           } else {
-            console.log("Right Trigger Released");
-          }
-        });
-        let squeezeComponent = motionController.getComponent(xr_ids[1]); //xr-standard-squeeze
-        squeezeComponent.onButtonStateChangedObservable.add(() => {
-          if (squeezeComponent.pressed) {
-            console.log("Right Squeeze Pressed");
-          } else {
-            console.log("Right Squeeze Released");
-          }
-        });
-        let thumbstickComponent = motionController.getComponent(xr_ids[2]); //xr-standard-thumbstick
-        thumbstickComponent.onButtonStateChangedObservable.add(() => {
-          if (thumbstickComponent.pressed) {
-            console.log("Right Thumb Pressed");
-          } else {
-            console.log("Right Thumb Released");
-          }
-        });
-        thumbstickComponent.onAxisValueChangedObservable.add((axes) => {
-          //Box_Right_ThumbStick is moving according to stick axes but camera rotation is also changing..
-          // Box_Right_ThumbStick.position.x += (axes.x)/100;
-          // Box_Right_ThumbStick.position.y += (axes.y)/100;
-          // console.log(values.x, values.y);
-        });
-
-        let abuttonComponent = motionController.getComponent(xr_ids[3]); //a-button
-        abuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (abuttonComponent.pressed) {
-            console.log("A Pressed");
-          } else {
-            console.log("A Released");
-          }
-        });
-        let bbuttonComponent = motionController.getComponent(xr_ids[4]); //b-button
-        bbuttonComponent.onButtonStateChangedObservable.add(() => {
-          if (bbuttonComponent.pressed) {
-            console.log("B Pressed");
-          } else {
-            console.log("B Released");
+            VRShot = false;
           }
         });
       }
@@ -496,6 +397,10 @@ export const Rotationloop = (a, parameter, speed, scene) => {
   RotationloopAnim.setKeys(keys);
   a.animations.push(RotationloopAnim);
   scene.beginAnimation(a, 0, 30, true);
+};
+export const GameOver = async () => {
+  await xr.baseExperience.exitXRAsync();
+  location.assign("https://github.com/Prashant2104/MajorLaserShooter");
 };
 
 setupScene();

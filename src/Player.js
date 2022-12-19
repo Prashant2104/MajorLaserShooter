@@ -270,7 +270,8 @@ export const UpdateHealth = (healthAmount) => {
   console.log(playerHealth);
   const healthBar = LocalAdvTex.getChildren()[0].children[0].children[0];
   healthBar.width = `${playerHealth}%`;
-  defaultPipeline.imageProcessing.vignetteCameraFov = 1 - playerHealth / 100;
+  // if (defaultPipeline)
+  //   defaultPipeline.imageProcessing.vignetteCameraFov = 1 - playerHealth / 100;
   if (playerHealth <= 25) {
     healthBar.background = "Red";
     if (playerHealth <= 0) {

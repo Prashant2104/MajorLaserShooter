@@ -35,7 +35,7 @@ export let defaultPipeline = null;
 export let portalAnim;
 export let inVr = false;
 let VRShot = false;
-let quality = "high";
+let quality = "low";
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
@@ -400,7 +400,34 @@ export const Rotationloop = (a, parameter, speed, scene) => {
 };
 export const GameOver = async () => {
   await xr.baseExperience.exitXRAsync();
-  location.assign("https://github.com/Prashant2104/MajorLaserShooter");
+  let x = Math.floor(Math.random() * 4) + 1;
+  switch (x) {
+    case 1:
+      location.assign(
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.F4tdkgmPFLpGJVHLv79o5gHaEJ%26pid%3DApi&f=1&ipt=7a3bd7e774dbaa265a44ee510bd731c0bced1ca3d64c24a8a77bd5ed1da9af85&ipo=images"
+      );
+      break;
+    case 2:
+      location.assign(
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.3Obi0Ec7PsZ_bnyXRgS40AHaEK%26pid%3DApi&f=1&ipt=82b039b103342a38c15c172b97894aecde0ff0d163fc7adf322907039849a2e5&ipo=images"
+      );
+      break;
+    case 3:
+      location.assign(
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.explicit.bing.net%2Fth%3Fid%3DOIP.ELWqhtVKPVUwB-SLdnCsAwHaEK%26pid%3DApi&f=1&ipt=fa8496699647fc768634dd531849fe2568a4f36001b68ecc664c0c74b9143cbb&ipo=images"
+      );
+      break;
+    case 4:
+      location.assign(
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.NOxXslShHtKDHBsNDDrNtQHaEK%26pid%3DApi&f=1&ipt=4bf83f1e288a40f579a205470097abf68b756f84138ddba6e6992afa70e1a1d2&ipo=images"
+      );
+      break;
+
+    default:
+      location.assign("https://github.com/Prashant2104/MajorLaserShooter");
+
+      break;
+  }
 };
 
 setupScene();
